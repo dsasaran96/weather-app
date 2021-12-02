@@ -2,12 +2,12 @@ import './style.css';
 
 let weather = {
     apiKey: 'e3af2ea00e42cd06165f0bd4b145815d',
-    fetchWeather: function (city, unit) {
-        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${unit}&appid=${this.apiKey}`)
+    fetchWeather: function (city) {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${this.apiKey}`)
         .then((response) => response.json())
         .then((data) => this.displayWeather(data));
     },
-    fetchWeatherByCoords: function(long, lat, unit) {
+    fetchWeatherByCoords: function(long, lat) {
         fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&units=metric&appid=${this.apiKey}`)
         .then((response) => response.json())
         .then((data) => this.displayWeather(data))
@@ -20,17 +20,40 @@ let weather = {
         document.querySelector('.city').innerText = `Weather in ${name}`;
         document.querySelector('.icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
         document.querySelector('.description').innerText = description;
-        document.querySelector('.temp').innerText = `${Math.floor(temp)}°C`
+        document.querySelector('.temp').innerText = `${Math.floor(temp)}`
         document.querySelector('.humidity').innerText = `Humidity: ${humidity}%`;
         document.querySelector('.wind').innerText = `Wind speed: ${speed} km/h`;
         document.querySelector('.weather').classList.remove("loading");
-        document.body.style.backgroundImage = `url(https://source.unsplash.com/1600x900/?${description.split(' ').join()})`;
     },
     search: function() {
-        this.fetchWeather(document.querySelector(".search-bar").value, 'metric');
+        this.fetchWeather(document.querySelector(".search-bar").value, unit);
         document.querySelector(".search-bar").value = "";
     }
 }
+
+let unit = 'c';
+
+document.getElementById('temp-box')
+        .addEventListener('click', function() {
+            let temp = document.querySelector('.temp');
+            document.getElementById('cels').classList.toggle('active');
+            document.getElementById('cels').classList.toggle('inactive');
+            document.getElementById('fahr').classList.toggle('active');
+            document.getElementById('fahr').classList.toggle('inactive');
+            switch(unit) {
+                case 'c':
+                    unit = 'f';
+                    break;
+                case 'f':
+                    unit = 'c';
+                    break;
+            }
+            if(unit==='c') {
+                temp.innerText = Math.floor((temp.innerText-32)*5/9);
+            } else {
+                temp.innerText = Math.ceil(temp.innerText*9/5+32);
+            }
+        })
 
 document.querySelector('.search button')
         .addEventListener('click', function() {
@@ -43,6 +66,10 @@ document.querySelector('.search-bar')
                 weather.search();
             }
         })
+
+function getLocation() {
+    navigator.geolocation.getCurrentPosition(showPos, showError);
+}
 
 function showError(error) {
     switch(error.code) {
@@ -62,10 +89,12 @@ function showError(error) {
     weather.fetchWeather('Bucharest', 'metric');
 }
 
-function getLocation(positions) {
-    const lat = positions.coords.latitude;
-    const long = positions.coords.longitude;
-    weather.fetchWeatherByCoords(long, lat, 'metric');
+function showPos(position) {
+    const long = position.coords.longitude;
+    const lat = position.coords.latitude;
+
+    weather.fetchWeatherByCoords(long, lat);
 }
 
-navigator.geolocation.getCurrentPosition(getLocation(positions), showError(error))
+getLocation();
+

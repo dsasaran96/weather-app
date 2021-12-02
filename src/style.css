@@ -13,7 +13,10 @@ body {
     height: 100vh;
     background: #222;
     font-family: 'Oswald', sans-serif;
-    background-image: url('https://source.unsplash.com/1600x900/?landscape')
+    background-image: url('https://source.unsplash.com/1600x900/?landscape');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 /* sections */
@@ -65,6 +68,16 @@ body {
 
 .temp {
     font-size: 230%;
+    cursor: pointer;
+}
+
+.unit {
+    font-size: 230%;
+    cursor: pointer;
+}
+
+.inactive {
+    color: #7c7c7c6f;
 }
 
 .description {
