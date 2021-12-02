@@ -62,8 +62,10 @@ function showError(error) {
     weather.fetchWeather('Bucharest', 'metric');
 }
 
-navigator.geolocation.getCurrentPosition((positions) => {
+function getLocation(positions) {
     const lat = positions.coords.latitude;
     const long = positions.coords.longitude;
     weather.fetchWeatherByCoords(long, lat, 'metric');
-})
+}
+
+navigator.geolocation.getCurrentPosition(getLocation(positions), showError(error))
